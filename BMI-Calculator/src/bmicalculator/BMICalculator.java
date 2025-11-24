@@ -6,6 +6,8 @@ import java.awt.*;
 public class BMICalculator extends JFrame {
 
     private JTextField weightField, heightField;
+    private JLabel resultLabel;
+    private JProgressBar bmiBar;
 
     public BMICalculator() {
 
@@ -43,12 +45,69 @@ public class BMICalculator extends JFrame {
         resetButton.setForeground(Color.WHITE);
         add(resetButton);
         
-        setVisible(true);
-    }
+        resultLabel = new JLabel("Your BMI will appear here");
+        resultLabel.setBounds(30, 180, 350, 30);
+        add(resultLabel);
         
-        public static void main(String[] args) {
-            new BMICalculator();
+        bmiBar = new JProgressBar(0, 100);
+        bmiBar.setBounds(30, 225, 320, 30);
+        bmiBar.setStringPainted(true);
+        add(bmiBar);
+        
+        calcButton.addActionListener(e -> calculateBMI());
+        
+        setVisible(true);
+        
+    }
+    
+    private void calculateBMI() {
+        try {
+            double weight = Double.parseDouble(weightField.getText());
+            double height = Double.parseDouble(heightField.getText());
+
+            if (weight <= 0 || height <= 0) {
+                showError("Weight and height must be positive.");
+                return;
+            }
+
+            double bmi = weight / (height * height);
+            String category;
+
+            if (bmi < 18.5) {
+                category = "Underweight";
+                bmiBar.setValue(25);
+            
+            } else if (bmi < 25) {
+                category = "Normal weight";
+                bmiBar.setValue(50);
+    
+            } else if (bmi < 30) {
+                category = "Overweight";
+                bmiBar.setValue(75);
+            
+            } else {
+                category = "Obesity";
+                bmiBar.setValue(100);
+   
+            }
+
+            resultLabel.setText(String.format("BMI: %.2f (%s)", bmi, category));
+            bmiBar.setString(category);
+
+        } catch (NumberFormatException ex) {
+            showError("Please enter valid numbers.");
         }
     }
+    private void showError(String msg) {
+        resultLabel.setText(msg);
+        bmiBar.setValue(0);
+        bmiBar.setString("");
+    }
+
+    public static void main(String[] args) {
+        new BMICalculator();
+    }
+}
+
 
 
